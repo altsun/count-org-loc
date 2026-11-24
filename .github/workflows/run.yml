@@ -40,7 +40,13 @@ jobs:
           COUNT_OWNER: ${{ inputs.org_or_user }}
           GITHUB_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN || github.token }}
         run: |
-          : "${COUNT_OWNER:?Enter a GitHub organization or username}"
+          case "${COUNT_OWNER:-}" in
+            *[![:space:]]*) ;;
+            *)
+              echo 'Enter a GitHub organization or username' >&2
+              exit 1
+              ;;
+          esac
           bundle exec ruby loc.rb "$COUNT_OWNER"
 
       - name: default count
